@@ -114,11 +114,13 @@ h1, h2, h3, h4, h5, h6 {
 .slider-title {
     font-size: 30px;
     line-height: 40px;
+    user-select: none; /*защита от автовыделения при перелистывании*/
 }
 
 .slider-text {
     font-size: 20px;
     line-height: 25px; 
+    user-select: none; /*защита от автовыделения при перелистывании*/
 }
 
 

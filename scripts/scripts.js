@@ -4,30 +4,33 @@ const stub = document.querySelectorAll('.stub'); // слайдеры
 const nextButton = document.querySelector('.next'); //кнопка следующий
 const backButton = document.querySelector('.back'); //кнопка предыдущий
 
-
-
-
-//настройки
-const settings = {
-    slider : false, //вкл/вык автоматический слайдер
-    time: 3000, //количество секунд для запуска автоматического слайдера
-    
-};
-
 //счетчик текущего слайдера
 let numberSlider = Number(0); 
 
-//запуск и проверка всех настроек слайдера
-startSlider();
+//настройки
+let settings = {
+    //автослайдер
+    autoSlider : { 
+        slider : false, //вкл/вык автоматический слайдер
+        time: 1000, //количество секунд для запуска автоматической смены слайда
+    },
+    //стрелки next, back
+    arrow : {
+        hiddenArrow : false, //скрыть кнопки следующий/предыдущий слайд. Запустится автослайдер.
+    },
+};
 
 //функция проверки и автоматического запуска слайдера через заданный промежуток времени
 function startSlider() {
-    //проверка и запуск автоматического слайдреа
-    if (settings.slider){
-        setInterval(nextSlider, settings.time);
+    //проверка и запуск автоматического слайдера
+    if (settings.autoSlider.slider){
+        setInterval(nextSlider, settings.autoSlider.time);
     }
-    else if (settings.slider === false) {
-        return;
+    if (settings.arrow.hiddenArrow === true) {
+        nextButton.style.display = 'none';
+        backButton.style.display = 'none';
+        settings.autoSlider.slider = true;
+        setInterval(nextSlider, settings.autoSlider.time);
     }
 }
 
@@ -68,6 +71,6 @@ function backSlider() {
     }
 }
 
-
-
+//запуск и проверка всех настроек слайдера
+startSlider();
 
