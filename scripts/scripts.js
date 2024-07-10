@@ -100,12 +100,11 @@ function backSlider() {
         slider.children[numberSlider].classList.add('stub_activ');
         //проверка если в настройках включена навигация
         if (settings.navigation.navigation === 'on') {
-            sliderNavigation.children[numberSlider - 1].classList.remove('slider__list_activ');
+            sliderNavigation.children[0].classList.remove('slider__list_activ');
             sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
         }
     }
 }
-
 
 //функция перелистывания слайдов с помощью мыши
 document.addEventListener('keydown', function(event) {
@@ -139,6 +138,7 @@ function showNavigation() {
 }
 
 //функция перелистывания на нужный слайд с помощью нижней навигации
+//--пока не работает
 document.addEventListener('click', function(e) {
     if (e.target.classList.value === 'slider__list') {
         console.log(e.target.dataset.id);
