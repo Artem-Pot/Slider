@@ -107,7 +107,7 @@ h1, h2, h3, h4, h5, h6 {
     height: auto;
     background-color: aliceblue;
     opacity: 0.7;
-    padding: 10px;
+    padding: 20px;
     border-radius: 10px;
 }
 
@@ -115,6 +115,7 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 30px;
     line-height: 40px;
     user-select: none; /*защита от автовыделения при перелистывании*/
+    margin-bottom: 10px;
 }
 
 .slider-text {
@@ -122,7 +123,6 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 25px; 
     user-select: none; /*защита от автовыделения при перелистывании*/
 }
-
 
 /*кнопки вперед назад*/
 .next, .back {
@@ -147,4 +147,28 @@ h1, h2, h3, h4, h5, h6 {
 
 .back {
     left: 20px;
+}
+
+.slider__navigation {
+    position: absolute;
+    width: 100%;
+    bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.slider__list {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: rgb(2, 162, 255);
+    cursor: pointer;
+}
+
+.slider__list_activ {
+    width: 25px;
+    height: 25px;
+    background-color: rgb(4, 39, 85);
 }
