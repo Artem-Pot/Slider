@@ -23,7 +23,7 @@ let settings = {
     },
     //нижняя навигация
     navigation : {
-        navigation : 'off', //скрыть/показать навигацию
+        navigation : 'on', //скрыть/показать навигацию
     },
 };
 
@@ -106,16 +106,45 @@ function backSlider() {
     }
 }
 
-// функция показа количества слайдов в виде навигации внизу 
-function showNavigation() {
 
+//функция перелистывания слайдов с помощью мыши
+document.addEventListener('keydown', function(event) {
+    if (event.code == 'ArrowRight') {
+        nextSlider();
+    }
+    if (event.code == 'ArrowLeft') {
+        backSlider();
+      }
+  });
+
+  document.addEventListener('mousedown', function(event) {
+    if (event.code == 'ArrowRight') {
+        nextSlider();
+    }
+    if (event.code == 'ArrowLeft') {
+        backSlider();
+      }
+  });
+
+// функция показа количества слайдов в виде навигации внизу 
+function showNavigation() {  
     for (let i = 0; i < sliderBox.children.length; i++) {
         let item  = document.createElement('span');
         item.classList.add('slider__list');
-        sliderNavigation.insertAdjacentElement("afterbegin", item );
+        item.dataset.id = i + 1; //создать уникальный data атрибут, чтобы знать к какому слайду привязан
+        sliderNavigation.insertAdjacentElement("afterbegin", item );    
     }
-    sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
+
+    sliderNavigation.children[numberSlider].classList.add('slider__list_activ'); //выводит активный элемент при запуске данной функции
 }
+
+//функция перелистывания на нужный слайд с помощью нижней навигации
+document.addEventListener('click', function(e) {
+    if (e.target.classList.value === 'slider__list') {
+        console.log(e.target.dataset.id);
+    }
+    
+});
 
 //запуск и проверка всех настроек слайдера
 startSlider();
