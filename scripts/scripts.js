@@ -1,11 +1,9 @@
 const slider = document.querySelector('.slider__box'); //список слайдеров
 const sliderBox = document.querySelector('.slider__box'); //все слайдеры
 const stub = document.querySelectorAll('.stub'); // каждый элемент слайдера
-
 const nextButton = document.querySelector('.next'); //кнопка следующий
 const backButton = document.querySelector('.back'); //кнопка предыдущий
-
-const sliderNavigation = document.querySelector('.slider__navigation');
+const sliderNavigation = document.querySelector('.slider__navigation'); //поле нижней навигации
 
 //счетчик текущего слайдера
 let numberSlider = Number(0); 
@@ -91,7 +89,6 @@ function backSlider() {
             sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
             sliderNavigation.children[numberSlider - 1].classList.add('slider__list_activ');
         }
-
         numberSlider -= 1;
     }
     else if(slider.children[numberSlider - 1] === undefined) {
@@ -130,20 +127,25 @@ function showNavigation() {
     for (let i = 0; i < sliderBox.children.length; i++) {
         let item  = document.createElement('span');
         item.classList.add('slider__list');
-        item.dataset.id = i + 1; //создать уникальный data атрибут, чтобы знать к какому слайду привязан
-        sliderNavigation.insertAdjacentElement("afterbegin", item );    
+        item.dataset.id = i; //создать уникальный data атрибут, чтобы знать к какому слайду привязан для дальнейшей возможности клика по нему
+        sliderNavigation.insertAdjacentElement("afterbegin", item );  
     }
 
+    sliderNavigation.append(...Array.from(sliderNavigation.children).reverse()); //'костыль' для реверса data-id
     sliderNavigation.children[numberSlider].classList.add('slider__list_activ'); //выводит активный элемент при запуске данной функции
 }
 
 //функция перелистывания на нужный слайд с помощью нижней навигации
-//--пока не работает
 document.addEventListener('click', function(e) {
-    if (e.target.classList.value === 'slider__list') {
-        console.log(e.target.dataset.id);
+    if (e.target.classList.value === 'slider__list') { //если нажатие на навигации слайдера
+        slider.children[numberSlider].classList.remove('stub_activ');
+        sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
+
+        //создание активного слайда с активацией выделения навигации
+        slider.children[e.target.dataset.id].classList.add('stub_activ');
+        numberSlider = e.target.dataset.id; //текущий слайдер
+        sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
     }
-    
 });
 
 //запуск и проверка всех настроек слайдера
