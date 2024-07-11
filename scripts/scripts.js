@@ -1,4 +1,4 @@
-const slider = document.querySelector('.slider__box'); //список слайдеров
+'use strict';
 const sliderBox = document.querySelector('.slider__box'); //все слайдеры
 const stub = document.querySelectorAll('.stub'); // каждый элемент слайдера
 const nextButton = document.querySelector('.next'); //кнопка следующий
@@ -25,85 +25,79 @@ let settings = {
     },
 };
 
-//функция проверки и автоматического запуска слайдера через заданный промежуток времени
-function startSlider() {
-    //проверка и запуск автоматического слайдера
-    if (settings.autoSlider.slider === 'on'){
-        setInterval(nextSlider, settings.autoSlider.time);
+//--------------------------------новая версия слайдера------------------------------------
+//функция добавления идентификаторов слайдеру и навигации при старте
+function startCreateId() {
+    //присвоение идентификатора всем слайдерам
+    for (let i = 0; i < sliderBox.children.length; i++) {
+        sliderBox.children[i].dataset.slider = i;
     }
-    //проверка и запуск наличия кнопок вперед/назад
-    if (settings.arrow.arrow === 'off') {
-        nextButton.style.display = 'none';
-        backButton.style.display = 'none';
-        settings.autoSlider.slider = true;
-        setInterval(nextSlider, settings.autoSlider.time);
+    //присвоение идентификатора всем навигационным кнопкам
+    for (let i = 0; i < sliderBox.children.length; i++) {
+        let item  = document.createElement('span');
+        item.classList.add('slider__list');
+        item.dataset.nav = i; //создать уникальный data атрибут, чтобы знать к какому слайду привязан для дальнейшей возможности клика по нему
+        sliderNavigation.insertAdjacentElement("afterbegin", item );  
     }
-    //проверка и запуск наличия нижней навигации
-    if (settings.navigation.navigation === 'on') {
-        showNavigation();
-    }
+    sliderNavigation.append(...Array.from(sliderNavigation.children).reverse()); //'костыль' для реверса data-id
+    sliderNavigation.children[numberSlider].classList.add('slider__list_activ'); //вывод текущему слайдеру увеличенную точку навигации
 }
+
+startCreateId();
+
 
 //кнопка следующий слайдер
 nextButton.addEventListener('click', () => {
-    nextSlider();    
+    nextSlider();
 });
+
+function nextSlider() {
+    sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
+
+    if (numberSlider + 1 < sliderBox.children.length){
+        sliderBox.children[numberSlider].classList.remove('stub_activ');
+        numberSlider += 1;
+
+        sliderBox.children[numberSlider].classList.add('stub_activ');
+        sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
+
+    }
+    else if(sliderBox.children[numberSlider + 1] === undefined) {
+        sliderBox.children[numberSlider].classList.remove('stub_activ');
+        numberSlider = 0;
+
+        sliderBox.children[numberSlider].classList.add('stub_activ');
+        sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
+    }
+}
+
 
 //кнопка предыдущий слайдер
 backButton.addEventListener('click', () => {
     backSlider();
-    
-});
+})
 
-//функция следующего слайда
-function nextSlider() {
-    if (numberSlider + 1 < slider.children.length){
-        slider.children[numberSlider].classList.remove('stub_activ');
-        slider.children[numberSlider + 1].classList.add('stub_activ');
-        //проверка если в настройках включена навигация
-        if (settings.navigation.navigation === 'on') {
-            sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
-            sliderNavigation.children[numberSlider + 1].classList.add('slider__list_activ');
-        }
-        numberSlider += 1;
-    }
-    else if(slider.children[numberSlider + 1] === undefined) {
-        slider.children[numberSlider].classList.remove('stub_activ');
-        slider.children[0].classList.add('stub_activ');
-        //проверка если в настройках включена навигация
-        if (settings.navigation.navigation === 'on') {
-            sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
-            sliderNavigation.children[0].classList.add('slider__list_activ');
-        }
-        numberSlider = 0;
-    }
-}
-
-//функция предыдущего слайда
 function backSlider() {
+    sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
+
     if (numberSlider > 0){
-        slider.children[numberSlider].classList.remove('stub_activ');
-        slider.children[numberSlider - 1].classList.add('stub_activ');
-        //проверка если в настройках включена навигация
-        if (settings.navigation.navigation === 'on') {
-            sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
-            sliderNavigation.children[numberSlider - 1].classList.add('slider__list_activ');
-        }
+        sliderBox.children[numberSlider].classList.remove('stub_activ');
+        sliderBox.children[numberSlider - 1].classList.add('stub_activ');
+
+        sliderNavigation.children[numberSlider - 1].classList.add('slider__list_activ');
         numberSlider -= 1;
     }
-    else if(slider.children[numberSlider - 1] === undefined) {
-        numberSlider = slider.children.length - 1;
-        slider.children[0].classList.remove('stub_activ');
-        slider.children[numberSlider].classList.add('stub_activ');
-        //проверка если в настройках включена навигация
-        if (settings.navigation.navigation === 'on') {
-            sliderNavigation.children[0].classList.remove('slider__list_activ');
-            sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
-        }
+    else if(sliderBox.children[numberSlider - 1] === undefined) {
+        numberSlider = sliderBox.children.length - 1;
+        sliderBox.children[0].classList.remove('stub_activ');
+
+        sliderBox.children[numberSlider].classList.add('stub_activ');
+        sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
     }
 }
 
-//функция перелистывания слайдов с помощью мыши
+
+//функция перелистывания слайдов с помощью клавиатуры
 document.addEventListener('keydown', function(event) {
     if (event.code == 'ArrowRight') {
         nextSlider();
@@ -113,6 +107,8 @@ document.addEventListener('keydown', function(event) {
       }
   });
 
+  //функция перелистывания слайдов с помощью мыши 50 на 50 поле.
+  //---в разработке----------
   document.addEventListener('mousedown', function(event) {
     if (event.code == 'ArrowRight') {
         nextSlider();
@@ -122,31 +118,42 @@ document.addEventListener('keydown', function(event) {
       }
   });
 
-// функция показа количества слайдов в виде навигации внизу 
-function showNavigation() {  
-    for (let i = 0; i < sliderBox.children.length; i++) {
-        let item  = document.createElement('span');
-        item.classList.add('slider__list');
-        item.dataset.id = i; //создать уникальный data атрибут, чтобы знать к какому слайду привязан для дальнейшей возможности клика по нему
-        sliderNavigation.insertAdjacentElement("afterbegin", item );  
-    }
-
-    sliderNavigation.append(...Array.from(sliderNavigation.children).reverse()); //'костыль' для реверса data-id
-    sliderNavigation.children[numberSlider].classList.add('slider__list_activ'); //выводит активный элемент при запуске данной функции
-}
-
 //функция перелистывания на нужный слайд с помощью нижней навигации
 document.addEventListener('click', function(e) {
     if (e.target.classList.value === 'slider__list') { //если нажатие на навигации слайдера
-        slider.children[numberSlider].classList.remove('stub_activ');
-        sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
 
-        //создание активного слайда с активацией выделения навигации
-        slider.children[e.target.dataset.id].classList.add('stub_activ');
-        numberSlider = e.target.dataset.id; //текущий слайдер
+        for (let i = 0; i < sliderBox.children.length; i++) {
+            sliderBox.children[i].classList.remove('stub_activ');
+            sliderNavigation.children[i].classList.remove('slider__list_activ');
+        }   
+
+        sliderBox.children[e.target.dataset.nav].classList.add('stub_activ');
+        numberSlider = e.target.dataset.nav; 
         sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
     }
 });
 
-//запуск и проверка всех настроек слайдера
-startSlider();
+//--------------------------------старая версия слайдера------------------------------------
+
+// //функция проверки и автоматического запуска слайдера через заданный промежуток времени
+// function startSlider() {
+//     //проверка и запуск автоматического слайдера
+//     if (settings.autoSlider.slider === 'on'){
+//         setInterval(nextSlider, settings.autoSlider.time);
+//     }
+//     //проверка и запуск наличия кнопок вперед/назад
+//     if (settings.arrow.arrow === 'off') {
+//         nextButton.style.display = 'none';
+//         backButton.style.display = 'none';
+//         settings.autoSlider.slider = true;
+//         setInterval(nextSlider, settings.autoSlider.time);
+//     }
+//     //проверка и запуск наличия нижней навигации
+//     if (settings.navigation.navigation === 'on') {
+//         showNavigation();
+//     }
+// }
+
+
+// //запуск и проверка всех настроек слайдера
+// startSlider();
