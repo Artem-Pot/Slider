@@ -12,17 +12,17 @@ let numberSlider = Number(0);
 let settings = {
     //автослайдер
     autoSlider : { 
-        slider : 'щаа', //вкл/вык автоматический слайдер
+        slider : 'off', //вкл/вык автоматический слайдер
         time: 1000, //количество миллисекунд для запуска автоматической смены слайда
         timeManual : 5000, //количество миллисекунд для повторного запуска после остановки слайда в ручную
     },
-    //стрелки next, back
+    //стрелки next, back и нижняя навигация
     arrow : {
         arrow : 'on', //скрыть/показать кнопки следующий/предыдущий слайд. Если выключен то запустится автослайдер.
     },
     //нижняя навигация
     navigation : {
-        navigation : 'on', //скрыть/показать навигацию
+        navigation : 'on', //скрыть/показать нижнюю навигацию
     },
 };
 
@@ -32,19 +32,34 @@ function startSlider() {
     if (settings.autoSlider.slider === 'on'){
         autoSlider(); //запуск автослайдера
     }
-    //проверка и запуск наличия кнопок вперед/назад. Если кнопки скрыты, то запускается автоматическая прокрутка слайдера
-    if (settings.arrow.arrow === 'off') {
-        nextButton.style.display = 'none';
-        backButton.style.display = 'none';
-        settings.autoSlider.slider = true;
-        setInterval(nextSlider, settings.autoSlider.time);
-    }
+
     //проверка и запуск наличия нижней навигации
     if (settings.navigation.navigation === 'on') {
         showNavigation();
     }
+    hideShowArrow(); //включение отключение показа кнопок вперед/назад и навигации
+    // startCreateId(); //включение функции присвоения дата идентификаторов. Возможно её удалить если не понадобится
+}
 
-    startCreateId(); //включение функции присвоения дата идентификаторов. Возможно её удалить если не понадобится
+//функция скрытия или показа кнопок вперед/назад и кнопки навигации
+function hideShowArrow() {
+    //скрыть кнопки вперед/назади и навигации
+    if (settings.arrow.arrow === 'off') {
+        nextButton.style.display = 'none';
+        backButton.style.display = 'none';
+        sliderNavigation.style.display = 'none';
+        settings.autoSlider.slider = 'on';
+        setInterval(nextSlider, settings.autoSlider.time);
+    }
+        //показать кнопки вперед/назад
+    if (settings.arrow.arrow === 'on') {
+        nextButton.style.display = 'block';
+        backButton.style.display = 'block';
+    }
+    //включение нижней навигации
+    if (settings.navigation.navigation === 'on') {
+        sliderNavigation.style.display = 'flex';
+    }
 }
 
 //функция запуска таймера слайдера
@@ -121,14 +136,14 @@ document.addEventListener('keydown', function(event) {
 
 //функция слайдера вперёд
 function nextSlider() {
-    sliderNavigation.children[+numberSlider].classList.remove('slider__list_activ');
+    settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.remove('slider__list_activ') : '';
 
     if (+numberSlider + 1 < sliderBox.children.length){ //если следующий слайдер меньше общего количества слайдеров
         sliderBox.children[+numberSlider].classList.remove('stub_activ');
         numberSlider = +numberSlider + 1;
 
         sliderBox.children[+numberSlider].classList.add('stub_activ');
-        sliderNavigation.children[+numberSlider].classList.add('slider__list_activ');
+        settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.add('slider__list_activ') : '';
     } 
 
     else if(sliderBox.children[+numberSlider + 1] === undefined) { //если следующий слайд не определён
@@ -136,18 +151,18 @@ function nextSlider() {
         numberSlider = 0;
 
         sliderBox.children[+numberSlider].classList.add('stub_activ');
-        sliderNavigation.children[+numberSlider].classList.add('slider__list_activ');
+        settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.add('slider__list_activ') : '';
     }
 }
 //функция слайдера назад
 function backSlider() {
-    sliderNavigation.children[+numberSlider].classList.remove('slider__list_activ');
+    settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.remove('slider__list_activ') : '';
 
     if (+numberSlider > 0){
         sliderBox.children[+numberSlider].classList.remove('stub_activ');
         sliderBox.children[numberSlider - 1].classList.add('stub_activ');
 
-        sliderNavigation.children[numberSlider - 1].classList.add('slider__list_activ');
+        settings.navigation.navigation === 'on' ? sliderNavigation.children[numberSlider - 1].classList.add('slider__list_activ') : '';
         numberSlider -= 1;
     }
     else if(sliderBox.children[numberSlider - 1] === undefined) {
@@ -156,7 +171,7 @@ function backSlider() {
         sliderBox.children[0].classList.remove('stub_activ');
 
         sliderBox.children[+numberSlider].classList.add('stub_activ');
-        sliderNavigation.children[+numberSlider].classList.add('slider__list_activ');
+        settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.add('slider__list_activ') : '';
     }
 }
 

@@ -128,18 +128,25 @@ h1, h2, h3, h4, h5, h6 {
 
 /*кнопки вперед назад*/
 .next, .back {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     position: absolute;
     top: 170px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: all .3s ease-in-out;
 }
 
-#test:hover {
-    stroke: #000;
+.next:hover, .back:hover {
+    background-color: rgba(205, 209, 200, 0.5);
+    border-radius: 5px;
+    transition: all .3s ease-in-out;
+}
+
+.next:hover #arrow {
+    stroke: #8a8585;
     transition: all .3s ease-in-out;
 }
 
