@@ -13,7 +13,7 @@ let settings = {
     //автослайдер
     autoSlider : { 
         slider : 'off', //вкл/вык автоматический слайдер
-        time: 1000, //количество секунд для запуска автоматической смены слайда
+        time: 1000, //количество миллисекунд для запуска автоматической смены слайда
     },
     //стрелки next, back
     arrow : {
@@ -25,14 +25,29 @@ let settings = {
     },
 };
 
-//--------------------------------новая версия слайдера------------------------------------
-//функция добавления идентификаторов слайдеру и навигации при старте
-function startCreateId() {
-    //присвоение идентификатора всем слайдерам
-    for (let i = 0; i < sliderBox.children.length; i++) {
-        sliderBox.children[i].dataset.slider = i;
+//запуск и проверка всех включенных настроек
+function startSlider() {
+    //проверка и запуск автоматического слайдера
+    if (settings.autoSlider.slider === 'on'){
+        setInterval(nextSlider, settings.autoSlider.time);
     }
-    //присвоение идентификатора всем навигационным кнопкам
+    //проверка и запуск наличия кнопок вперед/назад. Если кнопки скрыты, то запускается автоматическая прокрутка слайдера
+    if (settings.arrow.arrow === 'off') {
+        nextButton.style.display = 'none';
+        backButton.style.display = 'none';
+        settings.autoSlider.slider = true;
+        setInterval(nextSlider, settings.autoSlider.time);
+    }
+    //проверка и запуск наличия нижней навигации
+    if (settings.navigation.navigation === 'on') {
+        showNavigation();
+    }
+
+    startCreateId(); //включение функции присвоения дата идентификаторов. Возможно её удалить если не понадобится
+}
+
+//нижняя навигация слайдеров
+function showNavigation() {  
     for (let i = 0; i < sliderBox.children.length; i++) {
         let item  = document.createElement('span');
         item.classList.add('slider__list');
@@ -43,26 +58,56 @@ function startCreateId() {
     sliderNavigation.children[numberSlider].classList.add('slider__list_activ'); //вывод текущему слайдеру увеличенную точку навигации
 }
 
-startCreateId();
-
+//функция присвоения идентификатора всем слайдерам, возможно пригодится
+function startCreateId() {
+    for (let i = 0; i < sliderBox.children.length; i++) {
+        sliderBox.children[i].dataset.slider = i;
+    }
+}
 
 //кнопка следующий слайдер
 nextButton.addEventListener('click', () => {
     nextSlider();
 });
 
+//кнопка предыдущий слайдер
+backButton.addEventListener('click', () => {
+    backSlider();
+})
+
+//функция перелистывания слайдов с помощью клавиатуры
+document.addEventListener('keydown', function(event) {
+    if (event.code == 'ArrowRight') {
+        nextSlider();
+    }
+    if (event.code == 'ArrowLeft') {
+        backSlider();
+      }
+  });
+
+  //функция перелистывания слайдов с помощью мыши 50 на 50 поле.
+  //---в разработке----------
+//   document.addEventListener('mousedown', function(event) {
+//     if (event.code == 'ArrowRight') {
+//         nextSlider();
+//     }
+//     if (event.code == 'ArrowLeft') {
+//         backSlider();
+//       }
+//   });
+
+//функция слайдера вперёд
 function nextSlider() {
     sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
 
-    if (numberSlider + 1 < sliderBox.children.length){
+    if (numberSlider + 1 < sliderBox.children.length){ //если следующий слайдер меньше общего количества слайдеров
         sliderBox.children[numberSlider].classList.remove('stub_activ');
-        numberSlider += 1;
-
+        numberSlider = +numberSlider + 1;
         sliderBox.children[numberSlider].classList.add('stub_activ');
         sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
+    } 
 
-    }
-    else if(sliderBox.children[numberSlider + 1] === undefined) {
+    else if(sliderBox.children[numberSlider + 1] === undefined) { //если следующий слайд не определён
         sliderBox.children[numberSlider].classList.remove('stub_activ');
         numberSlider = 0;
 
@@ -70,13 +115,7 @@ function nextSlider() {
         sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
     }
 }
-
-
-//кнопка предыдущий слайдер
-backButton.addEventListener('click', () => {
-    backSlider();
-})
-
+//функция слайдера назад
 function backSlider() {
     sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
 
@@ -96,64 +135,22 @@ function backSlider() {
     }
 }
 
-
-//функция перелистывания слайдов с помощью клавиатуры
-document.addEventListener('keydown', function(event) {
-    if (event.code == 'ArrowRight') {
-        nextSlider();
-    }
-    if (event.code == 'ArrowLeft') {
-        backSlider();
-      }
-  });
-
-  //функция перелистывания слайдов с помощью мыши 50 на 50 поле.
-  //---в разработке----------
-  document.addEventListener('mousedown', function(event) {
-    if (event.code == 'ArrowRight') {
-        nextSlider();
-    }
-    if (event.code == 'ArrowLeft') {
-        backSlider();
-      }
-  });
-
-//функция перелистывания на нужный слайд с помощью нижней навигации
+//функция перемещения на нужный слайд с помощью нижней навигации
 document.addEventListener('click', function(e) {
-    if (e.target.classList.value === 'slider__list') { //если нажатие на навигации слайдера
+    if (e.target.classList.value === 'slider__list') { //если нажата одна из кнопок навигации
 
+        //обнуление всех активных слайдов и навигации
         for (let i = 0; i < sliderBox.children.length; i++) {
             sliderBox.children[i].classList.remove('stub_activ');
             sliderNavigation.children[i].classList.remove('slider__list_activ');
-        }   
+        }  
 
-        sliderBox.children[e.target.dataset.nav].classList.add('stub_activ');
-        numberSlider = e.target.dataset.nav; 
+        numberSlider = e.target.dataset.nav;
+        sliderBox.children[numberSlider].classList.add('stub_activ');
         sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
     }
 });
 
-//--------------------------------старая версия слайдера------------------------------------
-
-// //функция проверки и автоматического запуска слайдера через заданный промежуток времени
-// function startSlider() {
-//     //проверка и запуск автоматического слайдера
-//     if (settings.autoSlider.slider === 'on'){
-//         setInterval(nextSlider, settings.autoSlider.time);
-//     }
-//     //проверка и запуск наличия кнопок вперед/назад
-//     if (settings.arrow.arrow === 'off') {
-//         nextButton.style.display = 'none';
-//         backButton.style.display = 'none';
-//         settings.autoSlider.slider = true;
-//         setInterval(nextSlider, settings.autoSlider.time);
-//     }
-//     //проверка и запуск наличия нижней навигации
-//     if (settings.navigation.navigation === 'on') {
-//         showNavigation();
-//     }
-// }
+startSlider();
 
 
-// //запуск и проверка всех настроек слайдера
-// startSlider();
