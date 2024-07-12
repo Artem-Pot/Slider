@@ -12,8 +12,9 @@ let numberSlider = Number(0);
 let settings = {
     //автослайдер
     autoSlider : { 
-        slider : 'off', //вкл/вык автоматический слайдер
+        slider : 'on', //вкл/вык автоматический слайдер
         time: 1000, //количество миллисекунд для запуска автоматической смены слайда
+        timeManual : 5000, //количество миллисекунд для повторного запуска после остановки слайда в ручную
     },
     //стрелки next, back
     arrow : {
@@ -29,7 +30,7 @@ let settings = {
 function startSlider() {
     //проверка и запуск автоматического слайдера
     if (settings.autoSlider.slider === 'on'){
-        setInterval(nextSlider, settings.autoSlider.time);
+        autoSlider(); //запуск автослайдера
     }
     //проверка и запуск наличия кнопок вперед/назад. Если кнопки скрыты, то запускается автоматическая прокрутка слайдера
     if (settings.arrow.arrow === 'off') {
@@ -44,6 +45,13 @@ function startSlider() {
     }
 
     startCreateId(); //включение функции присвоения дата идентификаторов. Возможно её удалить если не понадобится
+}
+
+//функция таймер слайдера
+let timerId;
+
+function autoSlider() {
+    timerId = setInterval(nextSlider, settings.autoSlider.time); //переменная для запуска и остановки автослайдера.
 }
 
 //нижняя навигация слайдеров
@@ -68,20 +76,28 @@ function startCreateId() {
 //кнопка следующий слайдер
 nextButton.addEventListener('click', () => {
     nextSlider();
+    clearInterval(timerId); //остановка автослайдера
+    setTimeout(autoSlider, settings.autoSlider.timeManual); //запуск таймера после его остановки
 });
 
 //кнопка предыдущий слайдер
 backButton.addEventListener('click', () => {
     backSlider();
+    clearInterval(timerId);  //остановка автослайдера
+    setTimeout(autoSlider, settings.autoSlider.timeManual); //запуск таймера после его остановки
 })
 
 //функция перелистывания слайдов с помощью клавиатуры
 document.addEventListener('keydown', function(event) {
     if (event.code == 'ArrowRight') {
         nextSlider();
+        clearInterval(timerId); //остановка автослайдера
+        setTimeout(autoSlider, settings.autoSlider.timeManual); //запуск таймера после его остановки
     }
     if (event.code == 'ArrowLeft') {
         backSlider();
+        clearInterval(timerId); //остановка автослайдера
+        setTimeout(autoSlider, settings.autoSlider.timeManual); //запуск таймера после его остановки
       }
   });
 
