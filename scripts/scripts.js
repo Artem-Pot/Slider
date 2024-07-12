@@ -12,7 +12,7 @@ let numberSlider = Number(0);
 let settings = {
     //автослайдер
     autoSlider : { 
-        slider : 'on', //вкл/вык автоматический слайдер
+        slider : 'щаа', //вкл/вык автоматический слайдер
         time: 1000, //количество миллисекунд для запуска автоматической смены слайда
         timeManual : 5000, //количество миллисекунд для повторного запуска после остановки слайда в ручную
     },
@@ -26,7 +26,7 @@ let settings = {
     },
 };
 
-//запуск и проверка всех включенных настроек
+//запуск и проверка всех настроек
 function startSlider() {
     //проверка и запуск автоматического слайдера
     if (settings.autoSlider.slider === 'on'){
@@ -47,7 +47,7 @@ function startSlider() {
     startCreateId(); //включение функции присвоения дата идентификаторов. Возможно её удалить если не понадобится
 }
 
-//функция таймер слайдера
+//функция запуска таймера слайдера
 let timerId;
 
 function autoSlider() {
@@ -67,9 +67,16 @@ function showNavigation() {
 }
 
 //функция присвоения идентификатора всем слайдерам, возможно пригодится
-function startCreateId() {
-    for (let i = 0; i < sliderBox.children.length; i++) {
-        sliderBox.children[i].dataset.slider = i;
+// function startCreateId() {
+//     for (let i = 0; i < sliderBox.children.length; i++) {
+//         sliderBox.children[i].dataset.slider = i;
+//     }
+// }
+
+//функция повторного рестарта автослайдера после его остановки
+function restartSlider() {
+    if (settings.autoSlider.slider === 'on'){
+        setTimeout(autoSlider, settings.autoSlider.timeManual); //запуск таймера после его остановки
     }
 }
 
@@ -77,14 +84,14 @@ function startCreateId() {
 nextButton.addEventListener('click', () => {
     nextSlider();
     clearInterval(timerId); //остановка автослайдера
-    setTimeout(autoSlider, settings.autoSlider.timeManual); //запуск таймера после его остановки
+    restartSlider(); //рестарт автослайдера
 });
 
 //кнопка предыдущий слайдер
 backButton.addEventListener('click', () => {
     backSlider();
     clearInterval(timerId);  //остановка автослайдера
-    setTimeout(autoSlider, settings.autoSlider.timeManual); //запуск таймера после его остановки
+    restartSlider(); //рестарт автослайдера
 })
 
 //функция перелистывания слайдов с помощью клавиатуры
@@ -92,12 +99,12 @@ document.addEventListener('keydown', function(event) {
     if (event.code == 'ArrowRight') {
         nextSlider();
         clearInterval(timerId); //остановка автослайдера
-        setTimeout(autoSlider, settings.autoSlider.timeManual); //запуск таймера после его остановки
+        restartSlider(); //рестарт автослайдера
     }
     if (event.code == 'ArrowLeft') {
         backSlider();
         clearInterval(timerId); //остановка автослайдера
-        setTimeout(autoSlider, settings.autoSlider.timeManual); //запуск таймера после его остановки
+        restartSlider(); //рестарт автослайдера
       }
   });
 
@@ -166,6 +173,8 @@ document.addEventListener('click', function(e) {
         numberSlider = e.target.dataset.nav;
         sliderBox.children[numberSlider].classList.add('stub_activ');
         sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
+        clearInterval(timerId); //остановка автослайдера
+        restartSlider(); //рестарт автослайдера
     }
 });
 

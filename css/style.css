@@ -100,9 +100,6 @@ h1, h2, h3, h4, h5, h6 {
     position: absolute;
     top: 20%;
     left: 10%;
-}
-
-.slider__text-box {
     max-width: 50%;
     height: auto;
     background-color: aliceblue;
@@ -110,6 +107,11 @@ h1, h2, h3, h4, h5, h6 {
     padding: 20px;
     border-radius: 10px;
 }
+
+.slider__text-box_right {
+    right: 10%;
+}
+
 
 .slider-title {
     font-size: 30px;
