@@ -98,29 +98,30 @@ document.addEventListener('keydown', function(event) {
 
 //функция слайдера вперёд
 function nextSlider() {
-    sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
+    sliderNavigation.children[+numberSlider].classList.remove('slider__list_activ');
 
-    if (numberSlider + 1 < sliderBox.children.length){ //если следующий слайдер меньше общего количества слайдеров
-        sliderBox.children[numberSlider].classList.remove('stub_activ');
+    if (+numberSlider + 1 < sliderBox.children.length){ //если следующий слайдер меньше общего количества слайдеров
+        sliderBox.children[+numberSlider].classList.remove('stub_activ');
         numberSlider = +numberSlider + 1;
-        sliderBox.children[numberSlider].classList.add('stub_activ');
-        sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
+
+        sliderBox.children[+numberSlider].classList.add('stub_activ');
+        sliderNavigation.children[+numberSlider].classList.add('slider__list_activ');
     } 
 
-    else if(sliderBox.children[numberSlider + 1] === undefined) { //если следующий слайд не определён
-        sliderBox.children[numberSlider].classList.remove('stub_activ');
+    else if(sliderBox.children[+numberSlider + 1] === undefined) { //если следующий слайд не определён
+        sliderBox.children[+numberSlider].classList.remove('stub_activ');
         numberSlider = 0;
 
-        sliderBox.children[numberSlider].classList.add('stub_activ');
-        sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
+        sliderBox.children[+numberSlider].classList.add('stub_activ');
+        sliderNavigation.children[+numberSlider].classList.add('slider__list_activ');
     }
 }
 //функция слайдера назад
 function backSlider() {
-    sliderNavigation.children[numberSlider].classList.remove('slider__list_activ');
+    sliderNavigation.children[+numberSlider].classList.remove('slider__list_activ');
 
-    if (numberSlider > 0){
-        sliderBox.children[numberSlider].classList.remove('stub_activ');
+    if (+numberSlider > 0){
+        sliderBox.children[+numberSlider].classList.remove('stub_activ');
         sliderBox.children[numberSlider - 1].classList.add('stub_activ');
 
         sliderNavigation.children[numberSlider - 1].classList.add('slider__list_activ');
@@ -128,10 +129,11 @@ function backSlider() {
     }
     else if(sliderBox.children[numberSlider - 1] === undefined) {
         numberSlider = sliderBox.children.length - 1;
+
         sliderBox.children[0].classList.remove('stub_activ');
 
-        sliderBox.children[numberSlider].classList.add('stub_activ');
-        sliderNavigation.children[numberSlider].classList.add('slider__list_activ');
+        sliderBox.children[+numberSlider].classList.add('stub_activ');
+        sliderNavigation.children[+numberSlider].classList.add('slider__list_activ');
     }
 }
 
