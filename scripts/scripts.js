@@ -14,7 +14,7 @@ let numberSlider = Number(0);  //счетчик текущего слайдер�
 let settings = {
     autoSlider : { 
         slider : 'off', //вкл/вык автоматический показ слайдеров
-        time: 1000, //количество миллисекунд для запуска автоматической смены слайда
+        time: 2000, //количество миллисекунд для запуска автоматической смены слайда
         timeManual : 5000, //количество миллисекунд для повторного запуска после остановки слайда в ручную
     },
     arrow : {
@@ -33,16 +33,26 @@ let settings = {
 
 //запуск и проверка всех настроек
 function startSlider() {
-    //проверка и запуск автоматического слайдера
-    if (settings.autoSlider.slider === 'on'){
-        autoSlider(); //запуск автослайдера
+    if (settings.autoSlider.slider === 'on'){     //проверка и запуск автоматического слайдера
+        autoSlider();
     }
-
-    //проверка и запуск наличия нижней навигации
-    if (settings.navigation.navigation === 'on') {
+    if (settings.navigation.navigation === 'on') {     //проверка и запуск наличия нижней навигации
         showNavigation();
     }
-    hideShowArrow(); //включение отключение показа кнопок вперед/назад и навигации
+    if (settings.arrow.arrow === 'off') {     //отключение показа кнопок вперед/назад
+        nextButton.style.display = 'none';
+        backButton.style.display = 'none';
+        sliderNavigation.style.display = 'none';
+        settings.autoSlider.slider = 'on';
+        setInterval(nextSlider, settings.autoSlider.time);
+    }
+    if (settings.arrow.arrow === 'on') {         //показать кнопки вперед/назад
+        nextButton.style.display = 'block';
+        backButton.style.display = 'block';
+    }
+    if (settings.navigation.navigation === 'on') {     //включение нижней навигации
+        sliderNavigation.style.display = 'flex';
+    }
 }
 
 //функция анимации слайдера
@@ -63,27 +73,6 @@ function animationSlider() {
     }
 }
 
-//функция скрытия или показа кнопок вперед/назад и кнопки навигации
-function hideShowArrow() {
-    //скрыть кнопки вперед/назади и навигации
-    if (settings.arrow.arrow === 'off') {
-        nextButton.style.display = 'none';
-        backButton.style.display = 'none';
-        sliderNavigation.style.display = 'none';
-        settings.autoSlider.slider = 'on';
-        setInterval(nextSlider, settings.autoSlider.time);
-    }
-        //показать кнопки вперед/назад
-    if (settings.arrow.arrow === 'on') {
-        nextButton.style.display = 'block';
-        backButton.style.display = 'block';
-    }
-    //включение нижней навигации
-    if (settings.navigation.navigation === 'on') {
-        sliderNavigation.style.display = 'flex';
-    }
-}
-
 //функция автоскрытия кнопок после простоя, 10 секунд
 function autoHideShowArrow() {
     if (settings.arrow.arrow === 'on' && settings.arrow.autoArrow === 'on') {
@@ -100,10 +89,8 @@ sliderBox.addEventListener('mousemove', () => {
     if(settings.autoSlider.slider === 'off'){
         nextButton.style.display = 'block';
         nextButton.style.animation = 'animation-2 1s 1';
-
         backButton.style.display = 'block';
         backButton.style.animation = 'animation-2 1s 1';
-
         sliderNavigation.style.display = 'flex';
     }
 })
@@ -122,7 +109,7 @@ function showNavigation() {
         sliderNavigation.insertAdjacentElement("afterbegin", item );  
     }
     sliderNavigation.append(...Array.from(sliderNavigation.children).reverse()); //'костыль' для реверса data-id
-    sliderNavigation.children[numberSlider].classList.add('slider__list_activ'); //вывод текущему слайдеру увеличенную точку навигации
+    addClassNavigation(numberSlider);
 }
 
 //функция повторного рестарта автослайдера после его остановки
@@ -175,48 +162,62 @@ document.addEventListener('keydown', function(event) {
 //       }
 //   });
 
+//функция удаление класса неактивного слайдера
+function removeClass(children) {
+    sliderBox.children[children].classList.remove('stub_activ');
+}
+//функция добавление активного слайдера
+function addClass(children) {
+    sliderBox.children[children].classList.add('stub_activ');
+}
+
+//функция удаление класса неактивной навигации
+function removeClassNavigation(children) {
+    sliderNavigation.children[children].classList.remove('slider__list_activ');
+}
+
+//функция добавление активной навигации
+function addClassNavigation(children) {
+    sliderNavigation.children[children].classList.add('slider__list_activ');
+}
+
 //функция слайдера вперёд
 function nextSlider() {
-    settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.remove('slider__list_activ') : '';
+    settings.navigation.navigation === 'on' ? removeClassNavigation(+numberSlider) : '';
 
     if (+numberSlider + 1 < sliderBox.children.length){ //если следующий слайдер меньше общего количества слайдеров
-        sliderBox.children[+numberSlider].classList.remove('stub_activ');
+        removeClass(+numberSlider);
         numberSlider = +numberSlider + 1;
-
-        sliderBox.children[+numberSlider].classList.add('stub_activ');
-        settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.add('slider__list_activ') : '';
+        addClass(+numberSlider);
+        settings.navigation.navigation === 'on' ? addClassNavigation(+numberSlider) : '';
         animation.style.animation = 'animation-3 1s 1';
     } 
 
     else if(sliderBox.children[+numberSlider + 1] === undefined) { //если следующий слайд не определён
-        sliderBox.children[+numberSlider].classList.remove('stub_activ');
+        removeClass(+numberSlider);
         numberSlider = 0;
-
-        sliderBox.children[+numberSlider].classList.add('stub_activ');
-        settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.add('slider__list_activ') : '';
+        addClass(+numberSlider);
+        settings.navigation.navigation === 'on' ? addClassNavigation(+numberSlider) : '';
         animation.style.animation = 'animation-3 1s 1';
     }
     animationSlider(); //анимация слайдера
 }
 //функция слайдера назад
 function backSlider() {
-    settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.remove('slider__list_activ') : '';
+    settings.navigation.navigation === 'on' ? removeClassNavigation(+numberSlider) : '';
 
     if (+numberSlider > 0){
-        sliderBox.children[+numberSlider].classList.remove('stub_activ');
-        sliderBox.children[numberSlider - 1].classList.add('stub_activ');
-
-        settings.navigation.navigation === 'on' ? sliderNavigation.children[numberSlider - 1].classList.add('slider__list_activ') : '';
+        removeClass(+numberSlider);
+        addClass(numberSlider - 1);
+        settings.navigation.navigation === 'on' ? addClassNavigation(+numberSlider - 1) : '';
         numberSlider -= 1;
 
     }
     else if(sliderBox.children[numberSlider - 1] === undefined) {
         numberSlider = sliderBox.children.length - 1;
-
-        sliderBox.children[0].classList.remove('stub_activ');
-
-        sliderBox.children[+numberSlider].classList.add('stub_activ');
-        settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.add('slider__list_activ') : '';
+        removeClass(0);
+        addClass(+numberSlider);
+        settings.navigation.navigation === 'on' ? addClassNavigation(+numberSlider) : '';
     }
     animationSlider(); //анимация слайдера
 }
@@ -227,13 +228,13 @@ document.addEventListener('click', function(e) {
 
         //обнуление всех активных слайдов и навигации
         for (let i = 0; i < sliderBox.children.length; i++) {
-            sliderBox.children[i].classList.remove('stub_activ');
-            sliderNavigation.children[i].classList.remove('slider__list_activ');
+            removeClass(i);
+            removeClassNavigation(i);
         }  
 
         numberSlider = e.target.dataset.nav; //перейти на слайд с нужным дата id
-        sliderBox.children[numberSlider].classList.add('stub_activ'); //задать активный класс слайду
-        sliderNavigation.children[numberSlider].classList.add('slider__list_activ'); //перейти на нужную кнопку навигации
+        addClass(numberSlider);
+        addClassNavigation(numberSlider);
 
         clearInterval(timerId); //остановка автослайдера
         restartSlider(); //рестарт автослайдера
