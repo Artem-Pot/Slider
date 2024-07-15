@@ -5,10 +5,10 @@ const nextButton = document.querySelector('.next'); //кнопка следую�
 const backButton = document.querySelector('.back'); //кнопка предыдущий
 const sliderNavigation = document.querySelector('.slider__navigation'); //поле нижней навигации
 
-const animation = document.querySelector('.animation');
+let animation = document.querySelector('.animation');
 
-//счетчик текущего слайдера
-let numberSlider = Number(0); 
+let timerId;
+let numberSlider = Number(0);  //счетчик текущего слайдера
 
 //настройки
 let settings = {
@@ -23,9 +23,10 @@ let settings = {
     navigation : {
         navigation : 'on', //скрыть/показать нижнюю навигацию
     },
-    // animation : {
-    //     animation : 1, //вид анимации слайдера
-    // },
+    animation : {
+        animation : 'on', //вкл / выкл анимацию
+        type : '3', //вид анимации слайдера. Доступны номера от 1 до 3.
+    },
 };
 
 //запуск и проверка всех настроек
@@ -39,18 +40,24 @@ function startSlider() {
     if (settings.navigation.navigation === 'on') {
         showNavigation();
     }
-    
     hideShowArrow(); //включение отключение показа кнопок вперед/назад и навигации
     // startCreateId(); //включение функции присвоения дата идентификаторов. Возможно её удалить если не понадобится
 }
 
 //функция анимации слайдера
 function animationSlider() {
-
-    //остановка сдайда animation-play-state: paused;
-    
+    if (settings.animation .animation === 'on') {
+        if (settings.animation.type === '1') {
+            document.querySelector('.stub_activ').style.animation = 'animation-1 1s 1';
+        }
+        if (settings.animation.type === '2') {
+            document.querySelector('.stub_activ').style.animation = 'animation-2 1s 1';
+        }
+        if (settings.animation.type === '3') {
+            document.querySelector('.stub_activ').style.animation = 'animation-3 1s 1';
+        }
+    }
 }
-
 
 //функция скрытия или показа кнопок вперед/назад и кнопки навигации
 function hideShowArrow() {
@@ -74,8 +81,6 @@ function hideShowArrow() {
 }
 
 //функция запуска таймера слайдера
-let timerId;
-
 function autoSlider() {
     timerId = setInterval(nextSlider, settings.autoSlider.time); //переменная для запуска и остановки автослайдера.
 }
@@ -111,7 +116,6 @@ nextButton.addEventListener('click', () => {
     nextSlider();
     clearInterval(timerId); //остановка автослайдера
     restartSlider(); //рестарт автослайдера
-    animationSlider();
 });
 
 //кнопка предыдущий слайдер
@@ -156,6 +160,8 @@ function nextSlider() {
 
         sliderBox.children[+numberSlider].classList.add('stub_activ');
         settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.add('slider__list_activ') : '';
+        animation.style.animation = 'animation-3 1s 1';
+        animationSlider();
     } 
 
     else if(sliderBox.children[+numberSlider + 1] === undefined) { //если следующий слайд не определён
@@ -164,7 +170,8 @@ function nextSlider() {
 
         sliderBox.children[+numberSlider].classList.add('stub_activ');
         settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.add('slider__list_activ') : '';
-        
+        animation.style.animation = 'animation-3 1s 1';
+        animationSlider();
     }
 }
 //функция слайдера назад
@@ -177,6 +184,7 @@ function backSlider() {
 
         settings.navigation.navigation === 'on' ? sliderNavigation.children[numberSlider - 1].classList.add('slider__list_activ') : '';
         numberSlider -= 1;
+        animationSlider();
     }
     else if(sliderBox.children[numberSlider - 1] === undefined) {
         numberSlider = sliderBox.children.length - 1;
@@ -185,6 +193,7 @@ function backSlider() {
 
         sliderBox.children[+numberSlider].classList.add('stub_activ');
         settings.navigation.navigation === 'on' ? sliderNavigation.children[+numberSlider].classList.add('slider__list_activ') : '';
+        animationSlider();
     }
 }
 
