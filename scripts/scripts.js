@@ -8,9 +8,11 @@ const sliderElement = document.querySelector('.slider__element');
 
 
 let animation = document.querySelector('.animation');
-
-let timerId;
 let numberSlider = Number(0);  //счетчик текущего слайдера
+
+//переменные для остановки таймеров
+let timerId;
+let timerAutoHideShowArrow;
 
 //настройки
 let settings = {
@@ -33,61 +35,79 @@ let settings = {
     },
 };
 
+startSlider(); //запуск проверки настроек и запуска слайдера
+
 //запуск и проверка всех настроек
 function startSlider() {
+    sliderSettingsСheck(); //проверка автослайдера
+    arrowSettingsСheck(); //проверка стрелок слайдера
+    navigationSettingsСheck(); //проверка и запуск наличия нижней навигации
+
+    // autoHideShowArrow();
+}
+
+
+
+//функция проверка настроек автослайдера
+function sliderSettingsСheck(){
     if (settings.autoSlider.slider === 'on'){     //проверка и запуск автоматического слайдера
-        autoSlider();
+        timerId = setInterval(nextSlider, settings.autoSlider.time); //присвоение переменной таймера для запуска и остановки автослайдера.
     }
-    if (settings.navigation.navigation === 'on') {     //проверка и запуск наличия нижней навигации
-        showNavigation();
-    }
-    if (settings.arrow.arrow === 'off') {     //отключение показа кнопок вперед/назад
-        nextButton.style.display = 'none';
-        backButton.style.display = 'none';
-        sliderNavigation.style.display = 'none';
-        settings.autoSlider.slider = 'on';
-        setInterval(nextSlider, settings.autoSlider.time);
-    }
+}
+
+//функция проверки включения настроек стрелок сладера
+function arrowSettingsСheck(){
     if (settings.arrow.arrow === 'on') {         //показать кнопки вперед/назад
         nextButton.style.display = 'block';
         backButton.style.display = 'block';
     }
-    if (settings.navigation.navigation === 'on') {     //включение нижней навигации
-        sliderNavigation.style.display = 'flex';
+    else {     //отключение показа кнопок вперед/назад
+        nextButton.style.display = 'none';
+        backButton.style.display = 'none';
+        sliderNavigation.style.display = 'none';
+
+        //включение автослайдера
+        settings.autoSlider.slider = 'on';
+        setInterval(nextSlider, settings.autoSlider.time);
     }
 }
 
-startSlider();
+//функция проверки включения навигационных кнопок
+
+function navigationSettingsСheck(){
+    if (settings.navigation.navigation === 'on') {     //проверка и запуск наличия нижней навигации
+        sliderNavigation.style.display = 'flex';
+        showNavigation();
+    }
+}
 
 //функция анимации слайдера
 function animationSlider() {
-    if (settings.animation .animation === 'on') {
-        if (settings.animation.type === '1') {
-            document.querySelector('.stub_activ').style.animation = 'animation-1 1s 1';
-        }
-        if (settings.animation.type === '2') {
-            document.querySelector('.stub_activ').style.animation = 'animation-2 1s 1';
-        }
-        if (settings.animation.type === '3') {
-            document.querySelector('.stub_activ').style.animation = 'animation-3 1s 1';
-        }
-    }
-    else {
-        document.querySelector('.stub_activ').style.animation = ''; 
-    }
+    // if (settings.animation .animation === 'on') {
+    //     if (settings.animation.type === '1') {
+    //         document.querySelector('.stub_activ').style.animation = 'animation-1 1s 1';
+    //     }
+    //     if (settings.animation.type === '2') {
+    //         document.querySelector('.stub_activ').style.animation = 'animation-2 1s 1';
+    //     }
+    //     if (settings.animation.type === '3') {
+    //         document.querySelector('.stub_activ').style.animation = 'animation-3 1s 1';
+    //     }
+    // }
+    // else {
+    //     document.querySelector('.stub_activ').style.animation = ''; 
+    // }
 }
-
-let timerAutoHideShowArrow;
 
 //функция автоскрытия кнопок и навигации после простоя
 function autoHideShowArrow() {
-    if (settings.arrow.arrow === 'on' && settings.arrow.autoArrow === 'on') {
-        timerAutoHideShowArrow = setTimeout(() => {
-            nextButton.style.display = 'none';
-            backButton.style.display = 'none';
-            sliderNavigation.style.display = 'none';
-        }, settings.arrow.autoArrowTime);
-    }
+    // if (settings.arrow.arrow === 'on' && settings.arrow.autoArrow === 'on') {
+    //     timerAutoHideShowArrow = setTimeout(() => {
+    //         nextButton.style.display = 'none';
+    //         backButton.style.display = 'none';
+    //         sliderNavigation.style.display = 'none';
+    //     }, settings.arrow.autoArrowTime);
+    // }
 }
 
 //функция создания нижней навигация слайдеров в зависимости от количества слайдов
@@ -102,16 +122,11 @@ function showNavigation() {
     addClassNavigation(numberSlider);
 }
 
-//функция запуска таймера слайдера
-function autoSlider() {
-    timerId = setInterval(nextSlider, settings.autoSlider.time); //присвоение переменной таймера для запуска и остановки автослайдера.
-}
-
 //функция повторного рестарта автослайдера после его остановки
 function restartSlider() {
-    if (settings.autoSlider.slider === 'on'){
-        setTimeout(autoSlider, settings.autoSlider.timeManual); //запуск таймера после его остановки
-    }
+    // if (settings.autoSlider.slider === 'on'){
+    //     setTimeout(autoSlider, settings.autoSlider.timeManual); //запуск таймера после его остановки
+    // }
 }
 
 //-------------------функции удаления и добавления классов---------------------------
@@ -154,7 +169,7 @@ function nextSlider() {
         settings.navigation.navigation === 'on' ? addClassNavigation(+numberSlider) : '';
         animation.style.animation = 'animation-3 1s 1';
     }
-    animationSlider(); //анимация слайдера
+    // animationSlider(); //анимация слайдера
 }
 
 //функция слайдера назад
@@ -181,33 +196,35 @@ function backSlider() {
 //Событие нажатия на кнопку следующий слайдер
 nextButton.addEventListener('click', () => {
     nextSlider();
-    clearInterval(timerId); //остановка автослайдера
-    restartSlider(); //рестарт автослайдера
-    autoHideShowArrow(); //скрытие кнопок после простоя
+    // clearInterval(timerId); //остановка автослайдера
+    // restartSlider(); //рестарт автослайдера
+    // autoHideShowArrow(); //скрытие кнопок после простоя
 });
 
 //Событие нажатия на кнопку  предыдущий слайдер
 backButton.addEventListener('click', () => {
     backSlider();
-    clearInterval(timerId);  //остановка автослайдера
-    restartSlider(); //рестарт автослайдера
-    autoHideShowArrow(); //скрытие кнопок после простоя
+    // clearInterval(timerId);  //остановка автослайдера
+    // restartSlider(); //рестарт автослайдера
+    // autoHideShowArrow(); //скрытие кнопок после простоя
 })
 
 //Событие смены слайдов с помощью клавиатуры
 document.addEventListener('keydown', function(event) {
-    if (event.code == 'ArrowRight') {
-        nextSlider();
-        clearInterval(timerId); //остановка автослайдера
-        restartSlider(); //рестарт автослайдера
-        autoHideShowArrow(); //скрытие кнопок после простоя
-    }
-    if (event.code == 'ArrowLeft') {
-        backSlider();
-        clearInterval(timerId);  //остановка автослайдера
-        restartSlider(); //рестарт автослайдера
-        autoHideShowArrow(); //п скрытие кнопок после простоя
-      }
+    // if (settings.autoSlider.slider === 'off'){     //проверка включенного автослайдера
+        if (event.code == 'ArrowRight') {
+            nextSlider();
+    //         clearInterval(timerId); //остановка автослайдера
+    //         restartSlider(); //рестарт автослайдера
+    //         autoHideShowArrow(); //скрытие кнопок после простоя
+        }
+        if (event.code == 'ArrowLeft') {
+            backSlider();
+    //         clearInterval(timerId);  //остановка автослайдера
+    //         restartSlider(); //рестарт автослайдера
+    //         autoHideShowArrow(); //скрытие кнопок после простоя
+        }
+    // }
   });
 
 //Событие перемещения на нужный слайд с помощью нижней навигации
@@ -232,20 +249,20 @@ document.addEventListener('click', function(e) {
 
 //Событие показа кнопок при наведении на слайдер, не распостраняется на блок навигации
 sliderBox.addEventListener('mousemove', () => {
-    if(settings.autoSlider.slider === 'off'){
-        nextButton.style.display = 'block';
-        nextButton.style.animation = 'animation-2 1s 1';
+    // if(settings.autoSlider.slider === 'off'){
+    //     nextButton.style.display = 'block';
+    //     nextButton.style.animation = 'animation-2 1s 1';
 
-        backButton.style.display = 'block';
-        backButton.style.animation = 'animation-2 1s 1';
+    //     backButton.style.display = 'block';
+    //     backButton.style.animation = 'animation-2 1s 1';
 
-        sliderNavigation.style.display = 'flex';
+    //     sliderNavigation.style.display = 'flex';
 
-        clearTimeout(timerAutoHideShowArrow);
-    }
+    //     clearTimeout(timerAutoHideShowArrow);
+    // }
 })
 
 //Событие отмены скрытия кнопок если были нажаты кнопки навигации
 sliderElement.addEventListener('click', () => {
-        clearTimeout(timerAutoHideShowArrow);
+        // clearTimeout(timerAutoHideShowArrow);
 })
