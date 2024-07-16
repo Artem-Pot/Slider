@@ -4,6 +4,8 @@ const stub = document.querySelectorAll('.stub'); // каждый элемент 
 const nextButton = document.querySelector('.next'); //кнопка следующий
 const backButton = document.querySelector('.back'); //кнопка предыдущий
 const sliderNavigation = document.querySelector('.slider__navigation'); //поле нижней навигации
+const sliderElement = document.querySelector('.slider__element');
+
 
 let animation = document.querySelector('.animation');
 
@@ -55,6 +57,8 @@ function startSlider() {
     }
 }
 
+startSlider();
+
 //функция анимации слайдера
 function animationSlider() {
     if (settings.animation .animation === 'on') {
@@ -73,10 +77,12 @@ function animationSlider() {
     }
 }
 
-//функция автоскрытия кнопок после простоя, 10 секунд
+let timerAutoHideShowArrow;
+
+//функция автоскрытия кнопок и навигации после простоя
 function autoHideShowArrow() {
     if (settings.arrow.arrow === 'on' && settings.arrow.autoArrow === 'on') {
-        setTimeout(() => {
+        timerAutoHideShowArrow = setTimeout(() => {
             nextButton.style.display = 'none';
             backButton.style.display = 'none';
             sliderNavigation.style.display = 'none';
@@ -84,23 +90,7 @@ function autoHideShowArrow() {
     }
 }
 
-//показ кнопок при наведении
-sliderBox.addEventListener('mousemove', () => {
-    if(settings.autoSlider.slider === 'off'){
-        nextButton.style.display = 'block';
-        nextButton.style.animation = 'animation-2 1s 1';
-        backButton.style.display = 'block';
-        backButton.style.animation = 'animation-2 1s 1';
-        sliderNavigation.style.display = 'flex';
-    }
-})
-
-//функция запуска таймера слайдера
-function autoSlider() {
-    timerId = setInterval(nextSlider, settings.autoSlider.time); //переменная для запуска и остановки автослайдера.
-}
-
-//нижняя навигация слайдеров
+//функция создания нижней навигация слайдеров в зависимости от количества слайдов
 function showNavigation() {  
     for (let i = 0; i < sliderBox.children.length; i++) {
         let item  = document.createElement('span');
@@ -112,6 +102,11 @@ function showNavigation() {
     addClassNavigation(numberSlider);
 }
 
+//функция запуска таймера слайдера
+function autoSlider() {
+    timerId = setInterval(nextSlider, settings.autoSlider.time); //присвоение переменной таймера для запуска и остановки автослайдера.
+}
+
 //функция повторного рестарта автослайдера после его остановки
 function restartSlider() {
     if (settings.autoSlider.slider === 'on'){
@@ -119,54 +114,12 @@ function restartSlider() {
     }
 }
 
-//кнопка следующий слайдер
-nextButton.addEventListener('click', () => {
-    nextSlider();
-    clearInterval(timerId); //остановка автослайдера
-    restartSlider(); //рестарт автослайдера
-    autoHideShowArrow(); //показ и скрытие кнопок после простоя
-});
-
-//кнопка предыдущий слайдер
-backButton.addEventListener('click', () => {
-    backSlider();
-    clearInterval(timerId);  //остановка автослайдера
-    restartSlider(); //рестарт автослайдера
-    autoHideShowArrow(); //показ и скрытие кнопок после простоя
-})
-
-//функция перелистывания слайдов с помощью клавиатуры
-document.addEventListener('keydown', function(event) {
-    if (event.code == 'ArrowRight') {
-        nextSlider();
-        clearInterval(timerId); //остановка автослайдера
-        restartSlider(); //рестарт автослайдера
-        autoHideShowArrow(); //показ и скрытие кнопок после простоя
-    }
-    if (event.code == 'ArrowLeft') {
-        backSlider();
-        clearInterval(timerId); //остановка автослайдера
-        restartSlider(); //рестарт автослайдера
-        autoHideShowArrow(); //показ и скрытие кнопок после простоя
-      }
-  });
-
-  //функция перелистывания слайдов с помощью мыши 50 на 50 поле.
-  //---в разработке----------
-//   document.addEventListener('mousedown', function(event) {
-//     if (event.code == 'ArrowRight') {
-//         nextSlider();
-//     }
-//     if (event.code == 'ArrowLeft') {
-//         backSlider();
-//       }
-//   });
-
+//-------------------функции удаления и добавления классов---------------------------
 //функция удаление класса неактивного слайдера
 function removeClass(children) {
     sliderBox.children[children].classList.remove('stub_activ');
 }
-//функция добавление активного слайдера
+//функция добавление класса активного слайдера
 function addClass(children) {
     sliderBox.children[children].classList.add('stub_activ');
 }
@@ -176,11 +129,12 @@ function removeClassNavigation(children) {
     sliderNavigation.children[children].classList.remove('slider__list_activ');
 }
 
-//функция добавление активной навигации
+//функция добавление класса активной навигации
 function addClassNavigation(children) {
     sliderNavigation.children[children].classList.add('slider__list_activ');
 }
 
+//--------------------функции смены слайдеров-------------------------
 //функция слайдера вперёд
 function nextSlider() {
     settings.navigation.navigation === 'on' ? removeClassNavigation(+numberSlider) : '';
@@ -202,6 +156,7 @@ function nextSlider() {
     }
     animationSlider(); //анимация слайдера
 }
+
 //функция слайдера назад
 function backSlider() {
     settings.navigation.navigation === 'on' ? removeClassNavigation(+numberSlider) : '';
@@ -222,7 +177,40 @@ function backSlider() {
     animationSlider(); //анимация слайдера
 }
 
-//функция перемещения на нужный слайд с помощью нижней навигации
+//----------------------События -------------------------------
+//Событие нажатия на кнопку следующий слайдер
+nextButton.addEventListener('click', () => {
+    nextSlider();
+    clearInterval(timerId); //остановка автослайдера
+    restartSlider(); //рестарт автослайдера
+    autoHideShowArrow(); //скрытие кнопок после простоя
+});
+
+//Событие нажатия на кнопку  предыдущий слайдер
+backButton.addEventListener('click', () => {
+    backSlider();
+    clearInterval(timerId);  //остановка автослайдера
+    restartSlider(); //рестарт автослайдера
+    autoHideShowArrow(); //скрытие кнопок после простоя
+})
+
+//Событие смены слайдов с помощью клавиатуры
+document.addEventListener('keydown', function(event) {
+    if (event.code == 'ArrowRight') {
+        nextSlider();
+        clearInterval(timerId); //остановка автослайдера
+        restartSlider(); //рестарт автослайдера
+        autoHideShowArrow(); //скрытие кнопок после простоя
+    }
+    if (event.code == 'ArrowLeft') {
+        backSlider();
+        clearInterval(timerId);  //остановка автослайдера
+        restartSlider(); //рестарт автослайдера
+        autoHideShowArrow(); //п скрытие кнопок после простоя
+      }
+  });
+
+//Событие перемещения на нужный слайд с помощью нижней навигации
 document.addEventListener('click', function(e) {
     if (e.target.classList.value === 'slider__list') { //если нажата одна из кнопок навигации
 
@@ -237,11 +225,27 @@ document.addEventListener('click', function(e) {
         addClassNavigation(numberSlider);
 
         clearInterval(timerId); //остановка автослайдера
-        restartSlider(); //рестарт автослайдера
-        autoHideShowArrow(); //показ и скрытие кнопок после простоя
+        autoHideShowArrow(); //скрытие кнопок после простоя
+        restartSlider(); //проверка и рестарт автослайдера
     }
 });
 
-startSlider();
+//Событие показа кнопок при наведении на слайдер, не распостраняется на блок навигации
+sliderBox.addEventListener('mousemove', () => {
+    if(settings.autoSlider.slider === 'off'){
+        nextButton.style.display = 'block';
+        nextButton.style.animation = 'animation-2 1s 1';
 
+        backButton.style.display = 'block';
+        backButton.style.animation = 'animation-2 1s 1';
 
+        sliderNavigation.style.display = 'flex';
+
+        clearTimeout(timerAutoHideShowArrow);
+    }
+})
+
+//Событие отмены скрытия кнопок если были нажаты кнопки навигации
+sliderElement.addEventListener('click', () => {
+        clearTimeout(timerAutoHideShowArrow);
+})
