@@ -15,7 +15,7 @@ let timerAutoHideShowArrow; //переменная таймера скрытия
 
 let settings = {
     autoSlider : { 
-        slider : 'on',
+        slider : 'off',
         time: 3000,
         timeManual : 10000,
     },

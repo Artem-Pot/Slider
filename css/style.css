@@ -174,6 +174,14 @@ h1, h2, h3, h4, h5, h6 {
     top: 40%;
 }
 
+.slider__text-box_width65 {
+    max-width: 65%;
+}
+
+.slider__text-box_width80 {
+    max-width: 80%;
+}
+
 .slider__text-box_center {
     top: calc(40%);
     left: 25%;
@@ -246,4 +254,28 @@ h1, h2, h3, h4, h5, h6 {
     width: 25px;
     height: 25px;
     background-color: rgb(4, 39, 85);
+}
+
+@media (max-width: 992px){
+    .slider-title {
+        font-size: 25px;
+        line-height: 30px;
+    }
+    
+    .slider-text {
+        font-size: 18px;
+        line-height: 20px; 
+    }
+}
+
+@media (max-width: 576px){
+    .slider-title {
+        font-size: 20px;
+        line-height: 25px;
+    }
+    
+    .slider-text {
+        font-size: 14px;
+        line-height: 16px; 
+    }
 }
